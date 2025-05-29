@@ -38,19 +38,14 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Profile profile;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @Builder.Default
-    private List<Address> addresses = new ArrayList<>();
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Address address;
 
-    public void addAddress(Address address) {
-        addresses.add(address);
+    public void setAddress(Address address) {
+        this.address = address;
         address.setUser(this);
     }
 
-    public void removeAddress(Address address) {
-        addresses.remove(address);
-        address.setUser(null);
-    }
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Novel> novels;
