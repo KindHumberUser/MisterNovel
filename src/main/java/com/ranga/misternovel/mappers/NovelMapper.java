@@ -13,7 +13,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface NovelMapper {
 
-    @Mapping(target = "authorId", source = "user.id")
+    @Mapping(target = "authorId", source = "author.id")
     @Mapping(target = "genreId", source = "genre.id")
     NovelDto toDto(Novel novel);
 }
