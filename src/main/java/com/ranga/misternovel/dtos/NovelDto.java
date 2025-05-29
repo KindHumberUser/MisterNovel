@@ -6,8 +6,12 @@
 package com.ranga.misternovel.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ranga.misternovel.entities.Chapter;
 import com.ranga.misternovel.entities.Genre;
 import lombok.Data;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class NovelDto {
@@ -16,6 +20,7 @@ public class NovelDto {
     private String name;
     private String description;
     private Integer likes;
-    private String author;
-    private Genre genre;
+    private Long authorId;
+    private Byte genreId;
+    private LocalDateTime createdAt;
 }

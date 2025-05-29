@@ -5,12 +5,15 @@
 
 package com.ranga.misternovel.Controllers;
 
+import com.ranga.misternovel.dtos.NovelDto;
 import com.ranga.misternovel.entities.Novel;
+import com.ranga.misternovel.mappers.NovelMapper;
 import com.ranga.misternovel.repositories.NovelRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -18,10 +21,28 @@ import org.springframework.web.bind.annotation.RestController;
 public class NovelController {
 
     private final NovelRepository novelRepository;
+    private final NovelMapper novelMapper;
 
     @GetMapping("")
-    public Iterable<Novel> getNovels() {
-        return null;
+    public List<NovelDto> getNovels(
+            @RequestParam(required = false, name = "genre") Byte genreId
+    ) {
+        List<Novel> novels;
+        if (genreId != null) {
+            novels = novelRepository.findByGenreId(genreId);
+        }
+        else {
+            novels = novelRepository.findAllWithGenre();
+        }
+        return novels.stream().map(novelMapper::toDto).toList();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<NovelDto> getNovel(@PathVariable Long id) {
+        var novel = novelRepository.findById(id).orElse(null);
+        if (novel == null)
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(novelMapper.toDto(novel));
     }
 
 }
