@@ -5,11 +5,10 @@
 
 package com.ranga.misternovel.Controllers;
 
-import com.ranga.misternovel.dtos.CreateUserRequest;
-import com.ranga.misternovel.dtos.UpdateUserRequest;
-import com.ranga.misternovel.dtos.UserDto;
-import com.ranga.misternovel.dtos.changePasswordRequest;
+import com.ranga.misternovel.dtos.*;
+import com.ranga.misternovel.entities.Profile;
 import com.ranga.misternovel.mappers.UserMapper;
+import com.ranga.misternovel.repositories.ProfileRepository;
 import com.ranga.misternovel.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -27,6 +26,7 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final ProfileRepository profileRepository;
 
     @GetMapping("")
     public Iterable<UserDto> getUsers(
@@ -105,6 +105,35 @@ public class UserController {
         userRepository.save(user);
         return ResponseEntity.noContent().build();
 
+    }
+
+    @GetMapping("/{id}/profile")
+    public ResponseEntity<ProfileDto> getUserProfile(@PathVariable Long id) {
+        var user = userRepository.findById(id).orElse(null);
+        if (user == null)
+            return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(userMapper.toProfileDto(user.getProfile()));
+    }
+
+    @PostMapping("/{id}/profile")
+    public ResponseEntity<ProfileDto> createUserProfile(
+            @RequestBody CreateProfileRequest request,
+            @PathVariable Long id) {
+        var user = userRepository.findById(id).orElse(null);
+        if (user == null)
+            return ResponseEntity.notFound().build();
+        if (user.getProfile() != null)
+            return ResponseEntity.badRequest().build();
+
+        var profile = userMapper.toProfileEntity(request);
+        profile.setUser(user);
+        System.out.println(profile);
+        user.setProfile(profile);
+        System.out.println(user.getProfile());
+        //profileRepository.save(profile);
+        userRepository.save(user);
+        return ResponseEntity.ok(userMapper.toProfileDto(profile));
     }
 
 }
