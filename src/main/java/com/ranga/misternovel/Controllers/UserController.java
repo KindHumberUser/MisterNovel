@@ -6,7 +6,7 @@
 package com.ranga.misternovel.Controllers;
 
 import com.ranga.misternovel.dtos.*;
-import com.ranga.misternovel.entities.Profile;
+import com.ranga.misternovel.mappers.ProfileMapper;
 import com.ranga.misternovel.mappers.UserMapper;
 import com.ranga.misternovel.repositories.ProfileRepository;
 import com.ranga.misternovel.repositories.UserRepository;
@@ -27,6 +27,7 @@ public class UserController {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final ProfileRepository profileRepository;
+    private final ProfileMapper profileMapper;
 
     @GetMapping("")
     public Iterable<UserDto> getUsers(
@@ -113,12 +114,12 @@ public class UserController {
         if (user == null)
             return ResponseEntity.notFound().build();
 
-        return ResponseEntity.ok(userMapper.toProfileDto(user.getProfile()));
+        return ResponseEntity.ok(profileMapper.toDto(user.getProfile()));
     }
 
     @PostMapping("/{id}/profile")
     public ResponseEntity<ProfileDto> createUserProfile(
-            @RequestBody CreateProfileRequest request,
+            @RequestBody ProfileDto profileDto,
             @PathVariable Long id) {
         var user = userRepository.findById(id).orElse(null);
         if (user == null)
@@ -126,14 +127,28 @@ public class UserController {
         if (user.getProfile() != null)
             return ResponseEntity.badRequest().build();
 
-        var profile = userMapper.toProfileEntity(request);
+        var profile = profileMapper.toEntity(profileDto);
         profile.setUser(user);
-        System.out.println(profile);
         user.setProfile(profile);
-        System.out.println(user.getProfile());
         //profileRepository.save(profile);
         userRepository.save(user);
-        return ResponseEntity.ok(userMapper.toProfileDto(profile));
+        return ResponseEntity.ok(profileMapper.toDto(profile));
+    }
+
+    @PutMapping("/{id}/profile")
+    public ResponseEntity<ProfileDto> updateUserProfile(
+            @RequestBody ProfileDto profileDto,
+            @PathVariable Long id) {
+        var user = userRepository.findById(id).orElse(null);
+        if (user == null)
+            return ResponseEntity.notFound().build();
+        var profile = user.getProfile();
+        if (profile == null)
+            return ResponseEntity.badRequest().build();
+        profileMapper.update(profileDto, profile);
+        userRepository.save(user);
+        profileRepository.save(profile);
+        return ResponseEntity.ok(profileMapper.toDto(profile));
     }
 
 }

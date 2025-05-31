@@ -94,6 +94,7 @@ public class NovelController {
             return ResponseEntity.notFound().build();
 
         novelMapper.update(novelDto, novel);
+        novel.setGenre(genre);
         novelRepository.save(novel);
         novelDto.setId(novel.getId());
         return ResponseEntity.ok(novelDto);
