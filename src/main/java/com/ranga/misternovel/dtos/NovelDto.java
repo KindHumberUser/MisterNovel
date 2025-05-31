@@ -6,12 +6,9 @@
 package com.ranga.misternovel.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ranga.misternovel.entities.Chapter;
-import com.ranga.misternovel.entities.Genre;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 public class NovelDto {
