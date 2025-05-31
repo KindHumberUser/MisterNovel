@@ -8,10 +8,13 @@ package com.ranga.misternovel.Controllers;
 import com.ranga.misternovel.dtos.NovelDto;
 import com.ranga.misternovel.entities.Novel;
 import com.ranga.misternovel.mappers.NovelMapper;
+import com.ranga.misternovel.repositories.GenreRepository;
 import com.ranga.misternovel.repositories.NovelRepository;
+import com.ranga.misternovel.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
@@ -22,6 +25,8 @@ public class NovelController {
 
     private final NovelRepository novelRepository;
     private final NovelMapper novelMapper;
+    private final UserRepository userRepository;
+    private final GenreRepository genreRepository;
 
     @GetMapping("")
     public List<NovelDto> getNovels(
@@ -43,6 +48,65 @@ public class NovelController {
         if (novel == null)
             return ResponseEntity.notFound().build();
         return ResponseEntity.ok(novelMapper.toDto(novel));
+    }
+
+    @PostMapping("/user/{id}")
+    public ResponseEntity<NovelDto> createNovel(
+            @RequestBody NovelDto novelDto,
+            @PathVariable Long id,
+            UriComponentsBuilder uriBuilder
+    ) {
+
+        var genre = genreRepository.findById(novelDto.getGenreId()).orElse(null);
+
+        if (genre == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        var novel = novelMapper.toEntity(novelDto);
+        novel.setGenre(genre);
+        novel.setAuthor(userRepository.findById(id).orElse(null));
+        if (novel.getAuthor() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        novelRepository.save(novel);
+
+        novelDto.setId(novel.getId());
+        novelDto.setAuthorId(novel.getAuthor().getId());
+
+        var uri = uriBuilder.path("/novels/{id}").buildAndExpand(novelDto.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(novelDto);
+
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<NovelDto> updateNovel(
+            @PathVariable Long id,
+            @RequestBody NovelDto novelDto
+    ) {
+
+        var genre = genreRepository.findById(novelDto.getGenreId()).orElse(null);
+        if (genre == null)
+            return ResponseEntity.badRequest().build();
+        var novel = novelRepository.findById(id).orElse(null);
+        if (novel == null)
+            return ResponseEntity.notFound().build();
+
+        novelMapper.update(novelDto, novel);
+        novelRepository.save(novel);
+        novelDto.setId(novel.getId());
+        return ResponseEntity.ok(novelDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteNovel(
+            @PathVariable Long id) {
+        var novel = novelRepository.findById(id).orElse(null);
+        if (novel == null)
+            return ResponseEntity.notFound().build();
+        novelRepository.delete(novel);
+        return ResponseEntity.noContent().build();
     }
 
 }
