@@ -1,6 +1,10 @@
 spring:
   application:
     name: MisterNovel
+  jwt:
+    secret: ${JWT_SECRET}
+    accessTokenExpiration: 900 # 15m
+    refreshTokenExpiration: 604800 # 7d
   datasource:
     url: jdbc:mysql://localhost:3306/novels_api?createDatabaseIfNotExist=true
     username: root
