@@ -44,6 +44,7 @@ public class User {
     private List<Novel> novels;
 
     @ManyToMany
+    @Builder.Default
     @JoinTable(
             name = "library",
             joinColumns = @JoinColumn(name = "user_id"),
