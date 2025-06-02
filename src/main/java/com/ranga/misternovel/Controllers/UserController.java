@@ -34,8 +34,8 @@ public class UserController {
             @RequestParam(required = false, defaultValue = "", name = "sort") String sort
     ) {
 
-        if (!Set.of("name", "email").contains(sort))
-            sort = "name";
+        if (!Set.of("username", "email").contains(sort))
+            sort = "username";
 
         return userRepository.findAll(Sort.by(sort))
                 .stream()

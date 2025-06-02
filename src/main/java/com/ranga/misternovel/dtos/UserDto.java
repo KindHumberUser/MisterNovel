@@ -16,6 +16,6 @@ import lombok.Setter;
 public class UserDto {
     @JsonProperty("user_id")
     private Long id;
-    private String name;
+    private String username;
     private String email;
 }

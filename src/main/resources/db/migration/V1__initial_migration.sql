@@ -1,14 +1,3 @@
-CREATE TABLE addresses
-(
-    id      BIGINT AUTO_INCREMENT NOT NULL,
-    street  VARCHAR(255) NOT NULL,
-    city    VARCHAR(255) NOT NULL,
-    state   VARCHAR(255) NOT NULL,
-    zip     VARCHAR(255) NOT NULL,
-    user_id BIGINT       NOT NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (id)
-);
-
 CREATE TABLE genres
 (
     id   TINYINT AUTO_INCREMENT NOT NULL,
@@ -51,9 +40,11 @@ CREATE TABLE profiles
 CREATE TABLE users
 (
     id       BIGINT AUTO_INCREMENT NOT NULL,
-    name     VARCHAR(255) NOT NULL,
+    username     VARCHAR(255) NOT NULL,
     email    VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
+    role     VARCHAR(20) DEFAULT 'USER' NOT NULL,
+
     CONSTRAINT `PRIMARY` PRIMARY KEY (id)
 );
 
@@ -63,11 +54,6 @@ CREATE TABLE library
     user_id    BIGINT NOT NULL,
     CONSTRAINT `PRIMARY` PRIMARY KEY (novel_id, user_id)
 );
-
-ALTER TABLE addresses
-    ADD CONSTRAINT fk_addresses_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE;
-
-CREATE INDEX idx_addresses_user ON addresses (user_id);
 
 ALTER TABLE novels
     ADD CONSTRAINT fk_novels_genres FOREIGN KEY (genre_id) REFERENCES genres (id);
