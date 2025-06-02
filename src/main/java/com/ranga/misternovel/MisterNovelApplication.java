@@ -9,5 +9,4 @@ public class MisterNovelApplication {
     public static void main(String[] args) {
         SpringApplication.run(MisterNovelApplication.class, args);
     }
-
 }

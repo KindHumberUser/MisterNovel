@@ -52,8 +52,10 @@ public class ChapterController {
     ) {
         var chapter = chapterMapper.toEntity(chapterDto);
         var novel = novelRepository.findById(novelId).orElse(null);
-        if (novel == null)
+        if (novel == null) {
+            System.out.println("Novel not found");
             return ResponseEntity.notFound().build();
+        }
         chapter.setNovel(novel);
         chapterRepository.save(chapter);
         chapterDto.setId(chapter.getId());
