@@ -55,18 +55,20 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
+    //Uncomment the commented code for filtering security request
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .sessionManagement(c ->
                         c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(c -> {
-                            featureSecurityRules.forEach(r -> r.configure(c));
-                            c.anyRequest().authenticated();
-                        }
-                )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .authorizeHttpRequests(c -> c.anyRequest().permitAll())
+//                .authorizeHttpRequests(c -> {
+//                            featureSecurityRules.forEach(r -> r.configure(c));
+//                            c.anyRequest().authenticated();
+//                        }
+//                )
+                //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(c -> {
                     c.authenticationEntryPoint(
                             new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));

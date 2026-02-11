@@ -6,6 +6,7 @@
 package com.ranga.misternovel.Controllers;
 
 import com.ranga.misternovel.dtos.*;
+import com.ranga.misternovel.entities.Role;
 import com.ranga.misternovel.mappers.ProfileMapper;
 import com.ranga.misternovel.mappers.UserMapper;
 import com.ranga.misternovel.repositories.ProfileRepository;
@@ -58,6 +59,7 @@ public class UserController {
             UriComponentsBuilder uriBuilder) {
 
         var user = userMapper.toEntity(request);
+        user.setRole(Role.USER);
         userRepository.save(user);
 
         var userDto = userMapper.toDto(user);
